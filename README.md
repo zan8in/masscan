@@ -1,6 +1,6 @@
 # masscan
 ![Just I love it](https://github.com/zan8in/masscan/blob/main/assets/golang.png)
-Masscan is a golang library to run masscan scans, parse scan results(xml, json). 
+Masscan is a golang library to run masscan scans, parse scan results. 
 # What is masscan
 Masscan is an Internet-scale port scanner. It can scan the entire Internet in under 5 minutes, transmitting 10 million packets per second, from a single machine.
 

@@ -16,8 +16,7 @@ to install the package
 import "github.com/zan8in/masscan"
 ```
 # TODO
-- Support more parameters 
-- Add asynchronous scan
+- Support more parameters
 # Simple example
 ```go
 package main

@@ -26,4 +26,5 @@ type (
 		Reason string `json:"reason"`
 		TTL    int    `json:"ttl"`
 	}
+
 )

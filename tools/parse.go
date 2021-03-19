@@ -35,3 +35,4 @@ func ParseJson(content []byte) (*MasscanResult, error) {
 
 	return &result, nil
 }
+

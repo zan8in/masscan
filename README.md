@@ -71,6 +71,85 @@ Host: 146.56.202.222 Port: 80
 Host: 146.56.202.207 Port: 80
 hosts len :  37
 ```
+# Async scan example
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/zan8in/masscan"
+	"log"
+)
+
+func main() {
+	var (
+		scannerResult []masscan.ScannerResult
+		errorBytes  []byte
+	)
+
+	scanner, err := masscan.NewScanner(
+		masscan.SetParamTargets("146.56.202.100-146.56.202.200"),
+		masscan.SetParamPorts("3306"),
+		masscan.EnableDebug(),
+		masscan.SetParamWait(0),
+		masscan.SetParamRate(2000),
+	)
+	if err != nil {
+		log.Fatalf("unable to create masscan scanner: %v", err)
+	}
+
+	if err := scanner.RunAsync(); err != nil {
+		panic(err)
+	}
+
+	stdout := scanner.GetStdout()
+
+	stderr := scanner.GetStderr()
+
+	go func() {
+		for stdout.Scan() {
+			srs := masscan.ParseResult(stdout.Bytes())
+			fmt.Println(srs.IP, srs.Port)
+			scannerResult = append(scannerResult, srs)
+		}
+	}()
+
+	go func() {
+		for stderr.Scan() {
+			fmt.Println("err: ", stderr.Text())
+			errorBytes = append(errorBytes, stderr.Bytes()...)
+		}
+	}()
+
+	if err := scanner.Wait(); err !=nil {
+		panic(err)
+	}
+
+	fmt.Println("masscan result count : ", len(scannerResult))
+
+}
+```
+The program above outputs:
+```
+C:\masscan\masscan.exe 146.56.202.100-146.56.202.200 -p 3306 --wait=0 --rate=2000
+err:  Starting masscan 1.3.2 (http://bit.ly/14GZzcT) at 2021-03-19 14:52:27 GMT
+err:  Initiating SYN Stealth Scan
+err:  Scanning 101 hosts [1 port/host]
+146.56.202.115 3306
+146.56.202.190 3306
+146.56.202.188 3306
+146.56.202.125 3306
+146.56.202.185 3306
+146.56.202.117 3306
+146.56.202.112 3306
+146.56.202.161 3306
+146.56.202.165 3306
+146.56.202.166 3306
+                                                                             
+masscan result count :  10
+
+Process finished with exit code 0
+```
 # The development soul comes from
 [Ullaakut](https://github.com/Ullaakut/nmap)
 

@@ -133,19 +133,19 @@ func (s *Scanner) RunAsync() error {
 
 	stderr, err := s.cmd.StderrPipe()
 	if err != err {
-		return fmt.Errorf("unable to get error output from asynchronous nmap run: %v", err)
+		return fmt.Errorf("unable to get error output from asynchronous masscan run: %v", err)
 	}
 
 	stdout, err := s.cmd.StdoutPipe()
 	if err != nil {
-		return fmt.Errorf("unable to get standard output from asynchronous nmap run: %v", err)
+		return fmt.Errorf("unable to get standard output from asynchronous masscan run: %v", err)
 	}
 
 	s.stdout = *bufio.NewScanner(stdout)
 	s.stderr = *bufio.NewScanner(stderr)
 
 	if err := s.cmd.Start(); err != nil {
-		return fmt.Errorf("unable to execute asynchronous nmap run: %v", err)
+		return fmt.Errorf("unable to execute asynchronous masscan run: %v", err)
 	}
 
 	go func() {

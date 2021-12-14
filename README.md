@@ -15,6 +15,8 @@ to install the package
 ```
 import "github.com/zan8in/masscan"
 ```
+# Done
+- Masscan run timeout setting
 # TODO
 - Support more parameters
 # Simple example

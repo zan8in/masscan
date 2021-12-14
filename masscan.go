@@ -5,10 +5,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/zan8in/masscan/errors"
-	"github.com/zan8in/masscan/tools"
 	"os/exec"
 	"strings"
+
+	"github.com/zan8in/masscan/errors"
+	"github.com/zan8in/masscan/tools"
 )
 
 type (
@@ -26,7 +27,7 @@ type (
 	}
 
 	ScannerResult struct {
-		IP string `json:"ip"`
+		IP   string `json:"ip"`
 		Port string `json:"port"`
 	}
 )
@@ -217,6 +218,13 @@ func SetParamRate(maxRate int) func(*Scanner) {
 func SetParamWait(delay int) func(*Scanner) {
 	return func(s *Scanner) {
 		s.args = append(s.args, fmt.Sprintf("--wait=%d", delay))
+	}
+}
+
+// WithContext adds a context to a scanner, to make it cancellable and able to timeout.
+func WithContext(ctx context.Context) Option {
+	return func(s *Scanner) {
+		s.ctx = ctx
 	}
 }
 

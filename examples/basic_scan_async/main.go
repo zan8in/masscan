@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/zan8in/masscan"
 	"log"
+	"time"
+
+	"github.com/zan8in/masscan"
 )
 
 // BESTPORTS "21,22,80,U:137,U:161,443,445,U:1900,3306,3389,U:5353,8080"
@@ -14,18 +17,23 @@ const BESTPORTS = `
 	512,513,514,873,8069,1090,1099,2375,161,135,139,1883,6666,6667,7777,8161,9000,9001,
 	12345,27017,1080
 	`
+
 func main() {
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var (
 		scannerResult []masscan.ScannerResult
-		errorBytes  []byte
+		errorBytes    []byte
 	)
 
 	scanner, err := masscan.NewScanner(
-		masscan.SetParamTargets("146.56.202.100-146.56.202.200"),
-		masscan.SetParamPorts("3306"),
+		masscan.SetParamTargets("39.96.129.88"),
+		masscan.SetParamPorts("1-65535"),
 		masscan.EnableDebug(),
 		masscan.SetParamWait(0),
-		masscan.SetParamRate(2000),
+		masscan.SetParamRate(50),
+		masscan.WithContext(context),
 	)
 	if err != nil {
 		log.Fatalf("unable to create masscan scanner: %v", err)
@@ -54,7 +62,7 @@ func main() {
 		}
 	}()
 
-	if err := scanner.Wait(); err !=nil {
+	if err := scanner.Wait(); err != nil {
 		panic(err)
 	}
 

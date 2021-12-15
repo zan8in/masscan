@@ -19,7 +19,7 @@ const BESTPORTS = `
 	`
 
 func main() {
-	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	context, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 
 	var (
@@ -28,13 +28,14 @@ func main() {
 	)
 
 	scanner, err := masscan.NewScanner(
-		masscan.SetParamTargets("39.96.129.88"),
-		masscan.SetParamPorts("1-65535"),
+		masscan.SetParamTargets("60.10.116.10"),
+		masscan.SetParamPorts("80"),
 		masscan.EnableDebug(),
 		masscan.SetParamWait(0),
 		masscan.SetParamRate(50),
 		masscan.WithContext(context),
 	)
+
 	if err != nil {
 		log.Fatalf("unable to create masscan scanner: %v", err)
 	}
@@ -66,6 +67,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("masscan result count : ", len(scannerResult))
+	fmt.Println("masscan result count : ", len(scannerResult), " PID : ", scanner.GetPid())
 
 }

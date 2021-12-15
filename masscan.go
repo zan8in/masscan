@@ -21,6 +21,8 @@ type (
 		binaryPath string
 		ctx        context.Context
 
+		pid int // os.getpid()
+
 		debug bool `default:false`
 
 		stderr, stdout bufio.Scanner
@@ -68,7 +70,7 @@ func (s *Scanner) Run() (result *tools.MasscanResult, warnings []string, err err
 	s.args = append(s.args, "-")
 
 	// debugFlag is true
-	if s.debug == true {
+	if s.debug {
 		ss := strings.Join(s.args, " ")
 		println(s.binaryPath, ss)
 	}
@@ -82,6 +84,8 @@ func (s *Scanner) Run() (result *tools.MasscanResult, warnings []string, err err
 	if err != nil {
 		return nil, warnings, err
 	}
+
+	s.pid = cmd.Process.Pid
 
 	// Make a goroutine to notify the select when the scan is done
 	done := make(chan error, 1)
@@ -124,7 +128,7 @@ func (s *Scanner) Run() (result *tools.MasscanResult, warnings []string, err err
 func (s *Scanner) RunAsync() error {
 
 	// debugFlag is true
-	if s.debug == true {
+	if s.debug {
 		ss := strings.Join(s.args, " ")
 		println(s.binaryPath, ss)
 	}
@@ -132,7 +136,7 @@ func (s *Scanner) RunAsync() error {
 	s.cmd = exec.Command(s.binaryPath, s.args...)
 
 	stderr, err := s.cmd.StderrPipe()
-	if err != err {
+	if err != nil {
 		return fmt.Errorf("unable to get error output from asynchronous masscan run: %v", err)
 	}
 
@@ -147,6 +151,8 @@ func (s *Scanner) RunAsync() error {
 	if err := s.cmd.Start(); err != nil {
 		return fmt.Errorf("unable to execute asynchronous masscan run: %v", err)
 	}
+
+	s.pid = s.cmd.Process.Pid
 
 	go func() {
 		<-s.ctx.Done()
@@ -234,4 +240,9 @@ func ParseResult(content []byte) (sr ScannerResult) {
 	p := strings.Split(result[3], "/")
 	sr.Port = p[0]
 	return sr
+}
+
+// 获得 pid
+func (s *Scanner) GetPid() int {
+	return s.pid
 }

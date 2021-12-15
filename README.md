@@ -17,6 +17,7 @@ import "github.com/zan8in/masscan"
 ```
 # Done
 - Masscan run timeout setting
+- Get process ID (PID)
 # TODO
 - Support more parameters
 # Simple example
@@ -77,24 +78,32 @@ hosts len :  37
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/zan8in/masscan"
 	"log"
+	"time"
+
+	"github.com/zan8in/masscan"
 )
 
 func main() {
+	context, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+
 	var (
 		scannerResult []masscan.ScannerResult
-		errorBytes  []byte
+		errorBytes    []byte
 	)
 
 	scanner, err := masscan.NewScanner(
-		masscan.SetParamTargets("146.56.202.100-146.56.202.200"),
-		masscan.SetParamPorts("3306"),
+		masscan.SetParamTargets("60.10.116.10"),
+		masscan.SetParamPorts("80"),
 		masscan.EnableDebug(),
 		masscan.SetParamWait(0),
-		masscan.SetParamRate(2000),
+		masscan.SetParamRate(50),
+		masscan.WithContext(context),
 	)
+
 	if err != nil {
 		log.Fatalf("unable to create masscan scanner: %v", err)
 	}
@@ -122,11 +131,11 @@ func main() {
 		}
 	}()
 
-	if err := scanner.Wait(); err !=nil {
+	if err := scanner.Wait(); err != nil {
 		panic(err)
 	}
 
-	fmt.Println("masscan result count : ", len(scannerResult))
+	fmt.Println("masscan result count : ", len(scannerResult), " PID : ", scanner.GetPid())
 
 }
 ```

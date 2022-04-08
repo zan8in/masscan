@@ -52,6 +52,11 @@ func NewScanner(options ...Option) (*Scanner, error) {
 		}
 	}
 
+	dev, err := tools.AutoGetDevices()
+	if err == nil {
+		scanner.args = append(scanner.args, fmt.Sprintf("--interface=%s", dev.Device))
+	}
+
 	if scanner.ctx == nil {
 		scanner.ctx = context.Background()
 	}
@@ -224,6 +229,14 @@ func SetParamRate(maxRate int) func(*Scanner) {
 func SetParamWait(delay int) func(*Scanner) {
 	return func(s *Scanner) {
 		s.args = append(s.args, fmt.Sprintf("--wait=%d", delay))
+	}
+}
+
+// SetParamPorts sets the ports which the scanner should scan on each host.
+// eg: -p 80,8000-8100
+func SetParamInterface(eth string) func(*Scanner) {
+	return func(s *Scanner) {
+		s.args = append(s.args, fmt.Sprintf("--interface=%s", eth))
 	}
 }
 

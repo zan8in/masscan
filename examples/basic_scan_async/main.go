@@ -29,10 +29,10 @@ func main() {
 
 	scanner, err := masscan.NewScanner(
 		masscan.SetParamTargets("60.10.116.10"),
-		masscan.SetParamPorts("80"),
+		masscan.SetParamPorts(BESTPORTS),
 		masscan.EnableDebug(),
 		masscan.SetParamWait(0),
-		masscan.SetParamRate(50),
+		// masscan.SetParamRate(1000),
 		masscan.WithContext(context),
 	)
 
@@ -58,7 +58,7 @@ func main() {
 
 	go func() {
 		for stderr.Scan() {
-			fmt.Println("err: ", stderr.Text())
+			fmt.Println(stderr.Text())
 			errorBytes = append(errorBytes, stderr.Bytes()...)
 		}
 	}()

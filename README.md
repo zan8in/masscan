@@ -26,6 +26,7 @@ import "github.com/zan8in/masscan"
 # Table of content
 - masscan run timeout setting
 - Get process ID (PID)
+- Select network interface automatically
 # TODO
 - Support more parameters
 # Simple example

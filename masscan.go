@@ -52,10 +52,11 @@ func NewScanner(options ...Option) (*Scanner, error) {
 		}
 	}
 
-	dev, err := tools.AutoGetDevices()
-	if err == nil {
-		scanner.args = append(scanner.args, fmt.Sprintf("--interface=%s", dev.Device))
-	}
+	// 去掉自动检测网卡，让用户自己控制检测行为
+	// dev, err := tools.AutoGetDevices()
+	// if err == nil {
+	// 	scanner.args = append(scanner.args, fmt.Sprintf("--interface=%s", dev.Device))
+	// }
 
 	if scanner.ctx == nil {
 		scanner.ctx = context.Background()

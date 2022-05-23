@@ -199,6 +199,16 @@ func SetParamTargets(targets ...string) func(*Scanner) {
 	}
 }
 
+// SetParamExclude sets the targets which to exclude from the scan, this also allows scanning of range 0.0.0.0/0
+// eg: 127.0.0.1,255.255.255.255
+func SetParamExclude(excludes ...string) func(*Scanner) {
+	excludeList := strings.Join(excludes, ",")
+	return func(s *Scanner) {
+		s.args = append(s.args, "--exclude")
+		s.args = append(s.args, excludeList)
+	}
+}
+
 // SetParamPorts sets the ports which the scanner should scan on each host.
 // eg: -p 80,8000-8100
 func SetParamPorts(ports ...string) func(*Scanner) {

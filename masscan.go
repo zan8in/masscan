@@ -199,6 +199,15 @@ func SetParamTargets(targets ...string) func(*Scanner) {
 	}
 }
 
+// SetConfigPath set the scanner config-file path
+// eg: --conf /etc/masscan/masscan.conf
+func SetConfigPath(config string) func(*Scanner) {
+	return func(s *Scanner) {
+		s.args = append(s.args, "--conf")
+		s.args = append(s.args, config)
+	}
+}
+
 // SetParamExclude sets the targets which to exclude from the scan, this also allows scanning of range 0.0.0.0/0
 // eg: 127.0.0.1,255.255.255.255
 func SetParamExclude(excludes ...string) func(*Scanner) {

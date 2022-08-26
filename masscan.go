@@ -259,6 +259,13 @@ func SetParamInterface(eth string) func(*Scanner) {
 		s.args = append(s.args, fmt.Sprintf("--interface=%s", eth))
 	}
 }
+// SetShard sets the shard number (x) and the total shard amount (y) for distributed scanning
+// eg: --shard 1/2
+func SetShard(x int, y int) func(*Scanner) {
+	return func(s *Scanner) {
+		s.args = append(s.args, fmt.Sprintf("--shard=%d/%d", x, y))
+	}
+}
 
 // WithContext adds a context to a scanner, to make it cancellable and able to timeout.
 func WithContext(ctx context.Context) Option {

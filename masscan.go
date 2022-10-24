@@ -182,7 +182,7 @@ func (s *Scanner) PauseAsync(resumefp string) error {
 	if err != nil {
 		return fmt.Errorf("Unable to send interrupt signal to masscan: %v", err)
 	}
-	err = os.Rename("resume.conf", resumefp)
+	err = os.Rename("paused.conf", resumefp)
 	if err != nil {
 		return fmt.Errorf("Unable to move resume file to new location: %v", err)
 	}

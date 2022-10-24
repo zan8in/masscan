@@ -5,8 +5,10 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 
 	"github.com/zan8in/masscan/errors"
 	"github.com/zan8in/masscan/tools"
@@ -131,15 +133,9 @@ func (s *Scanner) Run() (result *tools.MasscanResult, warnings []string, err err
 	return nil, nil, nil
 }
 
-func (s *Scanner) RunAsync() error {
-
-	// debugFlag is true
-	if s.debug {
-		ss := strings.Join(s.args, " ")
-		println(s.binaryPath, ss)
-	}
-
-	s.cmd = exec.Command(s.binaryPath, s.args...)
+// runs asynchronously with specified arguments
+func (s *Scanner) runAsync(args []string) error {
+	s.cmd = exec.Command(s.binaryPath, args...)
 
 	stderr, err := s.cmd.StderrPipe()
 	if err != nil {
@@ -166,6 +162,35 @@ func (s *Scanner) RunAsync() error {
 	}()
 
 	return nil
+}
+
+func (s *Scanner) RunAsync() error {
+
+	// debugFlag is true
+	if s.debug {
+		ss := strings.Join(s.args, " ")
+		println(s.binaryPath, ss)
+	}
+	return s.runAsync(s.args)
+
+}
+
+// Pauses the masscan proccess by sending a control-c signal to the proccess
+// the proccess can then be resumed by calling Resume
+func (s *Scanner) PauseAsync(resumefp string) error {
+	err := s.cmd.Process.Signal(syscall.SIGINT)
+	if err != nil {
+		return fmt.Errorf("Unable to send interrupt signal to masscan: %v", err)
+	}
+	err = os.Rename("resume.conf", resumefp)
+	if err != nil {
+		return fmt.Errorf("Unable to move resume file to new location: %v", err)
+	}
+	return err
+}
+
+func (s *Scanner) ResumeAsync(resumefp string) error {
+	return s.runAsync([]string{"--resume", resumefp})
 }
 
 // Wait waits for the cmd to finish and returns error.
@@ -259,6 +284,7 @@ func SetParamInterface(eth string) func(*Scanner) {
 		s.args = append(s.args, fmt.Sprintf("--interface=%s", eth))
 	}
 }
+
 // SetShard sets the shard number (x) and the total shard amount (y) for distributed scanning
 // eg: --shard 1/2
 func SetShard(x int, y int) func(*Scanner) {

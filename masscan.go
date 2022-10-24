@@ -182,6 +182,7 @@ func (s *Scanner) PauseAsync(resumefp string) error {
 	if err != nil {
 		return fmt.Errorf("Unable to send interrupt signal to masscan: %v", err)
 	}
+	s.Wait()
 	err = os.Rename("paused.conf", resumefp)
 	if err != nil {
 		return fmt.Errorf("Unable to move resume file to new location: %v", err)
@@ -189,6 +190,8 @@ func (s *Scanner) PauseAsync(resumefp string) error {
 	return err
 }
 
+// NB: there is a bug in the latest release of masscan that will lead to this feature not working
+// but if you build masscan from source, you shouldn't experience any issues.
 func (s *Scanner) ResumeAsync(resumefp string) error {
 	return s.runAsync([]string{"--resume", resumefp})
 }

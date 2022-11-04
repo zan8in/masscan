@@ -295,6 +295,13 @@ func SetShard(x int, y int) func(*Scanner) {
 		s.args = append(s.args, fmt.Sprintf("--shard=%d/%d", x, y))
 	}
 }
+// SetSeed sets the seed for scanning randomization (allows for distributed scanning as well as SetShard)
+// eg: --seed 01123581321345589144233377
+func SetSeed(x int64) func(*Scanner) {
+	return func(s *Scanner) {
+		s.args = append(s.args, fmt.Sprintf("--seed=%d", x))
+	}
+}
 
 // WithContext adds a context to a scanner, to make it cancellable and able to timeout.
 func WithContext(ctx context.Context) Option {

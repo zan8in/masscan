@@ -297,7 +297,7 @@ func SetShard(x int, y int) func(*Scanner) {
 }
 // SetSeed sets the seed for scanning randomization (allows for distributed scanning as well as SetShard)
 // eg: --seed 01123581321345589144233377
-func SetSeed(x int64) func(*Scanner) {
+func SetSeed(x int) func(*Scanner) {
 	return func(s *Scanner) {
 		s.args = append(s.args, fmt.Sprintf("--seed=%d", x))
 	}
